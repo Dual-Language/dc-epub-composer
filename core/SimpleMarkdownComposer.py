@@ -13,11 +13,11 @@ from common.logger import get_logger
 class SimpleMarkdownComposer(IComposer):
     """Simple composer that converts translatedcontent.md to final.epub."""
     
-    def __init__(self):
+    def __init__(self, progress_filename: str = "composingservice-progress.json", translated_content_filename: str = "translatedcontent.md", final_epub_filename: str = "final.epub"):
         self.logger = get_logger()
-        self.progress_filename = "composingservice-progress.json"
-        self.translated_content_filename = "translatedcontent.md"
-        self.final_epub_filename = "final.epub"
+        self.progress_filename = progress_filename
+        self.translated_content_filename = translated_content_filename
+        self.final_epub_filename = final_epub_filename
     
     def get_name(self) -> str:
         return "simple_markdown"
@@ -150,7 +150,7 @@ class SimpleMarkdownComposer(IComposer):
             epub.write_epub(str(output_epub_path), book)
             
             # Update progress
-            progress['status'] = 'completed'
+            progress['status'] = 'free-completed' if self.final_epub_filename == 'free-final.epub' else 'completed'
             progress['completed_at'] = self._get_timestamp()
             progress['output_file'] = str(output_epub_path)
             self.save_progress(book_id, storage_root, progress)
@@ -207,3 +207,11 @@ class SimpleMarkdownComposer(IComposer):
         """Get current timestamp in ISO format."""
         from datetime import datetime
         return datetime.now().isoformat() 
+
+    def set_filenames(self, filenames: Dict[str, Any]) -> None:
+        if 'progress_filename' in filenames:
+            self.progress_filename = filenames['progress_filename']
+        if 'translated_content_filename' in filenames:
+            self.translated_content_filename = filenames['translated_content_filename']
+        if 'final_epub_filename' in filenames:
+            self.final_epub_filename = filenames['final_epub_filename'] 

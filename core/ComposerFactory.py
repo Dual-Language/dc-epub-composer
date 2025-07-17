@@ -1,4 +1,4 @@
-from typing import Dict, Type, Optional
+from typing import Any, Dict, Type, Optional
 from core.IComposer import IComposer
 from core.SimpleMarkdownComposer import SimpleMarkdownComposer
 from core.ParagraphByParagraphComposer import ParagraphByParagraphComposer
@@ -35,10 +35,12 @@ class ComposerFactory:
         """Get list of available composer names."""
         return list(self._composers.keys())
     
-    def find_suitable_composer(self, book_id: str, storage_root: str) -> Optional[IComposer]:
+    def find_suitable_composer(self, book_id: str, storage_root: str, filenames: Optional[Dict[str, Any]] = None) -> Optional[IComposer]:
         """Find the first composer that can handle the given book."""
         for name, composer_class in self._composers.items():
             composer = composer_class()
+            if filenames is not None:
+                composer.set_filenames(filenames)
             if composer.can_compose(book_id, storage_root):
                 self.logger.info(f"Found suitable composer '{name}' for book {book_id}", book_id)
                 return composer

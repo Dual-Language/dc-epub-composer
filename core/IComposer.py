@@ -38,3 +38,8 @@ class IComposer(ABC):
     def save_progress(self, book_id: str, storage_root: str, progress: Dict[str, Any]) -> None:
         """Save progress for the given book."""
         pass 
+
+    @abstractmethod
+    def set_filenames(self, filenames: Dict[str, Any]) -> None:
+        """Set filenames or configuration for the composer (e.g., input/output/progress files)."""
+        pass 

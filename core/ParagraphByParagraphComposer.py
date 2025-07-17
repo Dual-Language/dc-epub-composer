@@ -10,14 +10,14 @@ class ParagraphByParagraphComposer(IComposer):
     This is a placeholder for future implementation.
     """
     
-    def __init__(self):
+    def __init__(self, progress_filename: str = "composingservice-progress.json", translated_content_filename: str = "translatedcontent.md", original_content_filename: str = "originalbook.md", translated_json_filename: str = "translatedcontent.json", content_breakdown_filename: str = "contentbreakdown.json", final_epub_filename: str = "final.epub"):
         self.logger = get_logger()
-        self.progress_filename = "composingservice-progress.json"
-        self.translated_content_filename = "translatedcontent.md"
-        self.original_content_filename = "originalbook.md"
-        self.translated_json_filename = "translatedcontent.json"
-        self.content_breakdown_filename = "contentbreakdown.json"
-        self.final_epub_filename = "final.epub"
+        self.progress_filename = progress_filename
+        self.translated_content_filename = translated_content_filename
+        self.original_content_filename = original_content_filename
+        self.translated_json_filename = translated_json_filename
+        self.content_breakdown_filename = content_breakdown_filename
+        self.final_epub_filename = final_epub_filename
     
     def get_name(self) -> str:
         return "paragraph_by_paragraph"
@@ -121,3 +121,17 @@ class ParagraphByParagraphComposer(IComposer):
         """Get current timestamp in ISO format."""
         from datetime import datetime
         return datetime.now().isoformat() 
+
+    def set_filenames(self, filenames: Dict[str, Any]) -> None:
+        if 'progress_filename' in filenames:
+            self.progress_filename = filenames['progress_filename']
+        if 'translated_content_filename' in filenames:
+            self.translated_content_filename = filenames['translated_content_filename']
+        if 'original_content_filename' in filenames:
+            self.original_content_filename = filenames['original_content_filename']
+        if 'translated_json_filename' in filenames:
+            self.translated_json_filename = filenames['translated_json_filename']
+        if 'content_breakdown_filename' in filenames:
+            self.content_breakdown_filename = filenames['content_breakdown_filename']
+        if 'final_epub_filename' in filenames:
+            self.final_epub_filename = filenames['final_epub_filename'] 

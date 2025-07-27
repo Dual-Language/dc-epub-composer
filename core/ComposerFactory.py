@@ -2,6 +2,8 @@ from typing import Any, Dict, Type, Optional
 from core.IComposer import IComposer
 from core.SimpleMarkdownComposer import SimpleMarkdownComposer
 from core.ParagraphByParagraphComposer import ParagraphByParagraphComposer
+from core.DualLanguageMarkdownComposer import DualLanguageMarkdownComposer
+from core.RealStorageDualLanguageComposer import RealStorageDualLanguageComposer
 from common.logger import get_logger
 
 class ComposerFactory:
@@ -14,6 +16,10 @@ class ComposerFactory:
     
     def _register_default_composers(self):
         """Register the default composers."""
+        # Register real storage dual-language composer first (for storage-new format)
+        self.register_composer('real_storage_dual_language_markdown', RealStorageDualLanguageComposer)
+        # Register test dual-language composer second (for test data)
+        self.register_composer('dual_language_markdown', DualLanguageMarkdownComposer)
         self.register_composer('simple_markdown', SimpleMarkdownComposer)
         self.register_composer('paragraph_by_paragraph', ParagraphByParagraphComposer)
     

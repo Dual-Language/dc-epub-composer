@@ -68,9 +68,18 @@ class ComposingWorker(BaseComposingWorker):
         if final_epub_path.exists():
             return False
         
-        # Check if translatedcontent.md exists
+        # Check for dual-language files (originalbook.md + translatedcontent.md)
+        original_path = book_dir / "originalbook.md"
         translated_content_path = book_dir / self.config['translated_content_filename']
-        if not translated_content_path.exists():
+        
+        # If we have both original and translated files, we can do dual-language composition
+        has_dual_language_files = original_path.exists() and translated_content_path.exists()
+        
+        # If we only have translated content, we can do simple composition
+        has_translated_only = translated_content_path.exists()
+        
+        # Need at least one of these scenarios
+        if not (has_dual_language_files or has_translated_only):
             return False
         
         # Check progress to see if it's already been processed

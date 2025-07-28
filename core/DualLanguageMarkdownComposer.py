@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import mimetypes
 
 from core.IComposer import IComposer
-from core.DualLanguageCombiner import DualLanguageCombiner
+from position_based_combiner import PositionBasedCombiner
 from common.logger import get_logger
 
 class DualLanguageMarkdownComposer(IComposer):
@@ -24,30 +24,39 @@ class DualLanguageMarkdownComposer(IComposer):
         self.progress_filename = progress_filename
         self.translated_content_filename = translated_content_filename
         self.final_epub_filename = final_epub_filename
-        self.combiner = DualLanguageCombiner(self.logger)
+        self.combiner = PositionBasedCombiner()
     
     def get_name(self) -> str:
         return "dual_language_markdown"
     
     def can_compose(self, book_id: str, storage_root: str) -> bool:
-        """Check if both original.md and translatedcontent.md exist for this book."""
+        """Check if both originalbook.md and translatedcontent.md exist for this book."""
         book_dir = pathlib.Path(storage_root) / book_id
-        original_path = book_dir / "original.md"
+        original_path = book_dir / "originalbook.md"
         translated_path = book_dir / self.translated_content_filename
         
         # Must have both files to create dual-language content
-        return original_path.exists() and translated_path.exists()
+        has_both_files = original_path.exists() and translated_path.exists()
+        
+        # Also check that we haven't already processed this with dual-language
+        final_epub_path = book_dir / self.final_epub_filename
+        combined_path = book_dir / "combined-dual-language.md"
+        
+        # If we already have a combined file and our dual-language epub, don't reprocess
+        already_processed = final_epub_path.exists() and combined_path.exists()
+        
+        return has_both_files and not already_processed
     
     def compose(self, book_id: str, storage_root: str, config: Optional[Dict[str, Any]] = None) -> bool:
         """
-        Combine original.md and translatedcontent.md into dual-language format,
+        Combine originalbook.md and translatedcontent.md into dual-language format,
         then convert to EPUB.
         """
         try:
             self.logger.info(f"Starting dual-language composition for book: {book_id}", book_id)
             
             book_dir = pathlib.Path(storage_root) / book_id
-            original_path = book_dir / "original.md"
+            original_path = book_dir / "originalbook.md"
             translated_path = book_dir / self.translated_content_filename
             combined_path = book_dir / "combined-dual-language.md"
             output_epub_path = book_dir / self.final_epub_filename
@@ -68,9 +77,23 @@ class DualLanguageMarkdownComposer(IComposer):
             progress['step'] = 'combining_content'
             self.save_progress(book_id, storage_root, progress)
             
-            # Combine original and translated content
+            # Combine original and translated content using position-based matching
             self.logger.info(f"Combining original and translated content for book: {book_id}", book_id)
-            success = self.combiner.combine_files(original_path, translated_path, combined_path)
+            
+            # Read both files
+            with open(original_path, 'r', encoding='utf-8') as f:
+                original_content = f.read()
+            with open(translated_path, 'r', encoding='utf-8') as f:
+                translated_content = f.read()
+            
+            # Combine using position-based matching
+            combined_content = self.combiner.combine_by_position(original_content, translated_content)
+            
+            # Write combined content
+            with open(combined_path, 'w', encoding='utf-8') as f:
+                f.write(combined_content)
+            
+            success = True
             
             if not success:
                 self.logger.error(f"Failed to combine content for book: {book_id}", book_id)

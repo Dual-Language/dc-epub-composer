@@ -8,7 +8,7 @@ def get_storage_root() -> str:
 def get_composer_config() -> dict:
     """Get composer configuration."""
     return {
-        'default_composer': os.environ.get('DEFAULT_COMPOSER', 'simple_markdown'),
+        'default_composer': os.environ.get('DEFAULT_COMPOSER', 'real_storage_dual_language_markdown'),
         'sleep_interval': int(os.environ.get('SLEEP_INTERVAL', '10')),
         'progress_filename': 'composingservice-progress.json',
         'translated_content_filename': 'translatedcontent.md',

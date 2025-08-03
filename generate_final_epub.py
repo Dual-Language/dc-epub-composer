@@ -32,9 +32,20 @@ def generate_final_dual_language_epub(storage_root="storage", job_id=None):
     
     job_path = storage_path / job_id
     original_file = job_path / "originalbook.md"
-    translated_file = job_path / "translatedcontent.md"
     
-    print(f"📂 Processing job: {job_id}")
+    # Check for both regular and free translated content
+    translated_file = job_path / "translatedcontent.md"
+    free_translated_file = job_path / "free-translatedcontent.md"
+    
+    # Determine which file exists
+    if free_translated_file.exists():
+        translated_file = free_translated_file
+        print(f"📂 Processing FREE job: {job_id}")
+    elif translated_file.exists():
+        print(f"📂 Processing REGULAR job: {job_id}")
+    else:
+        print(f"❌ No translated content found for job: {job_id}")
+        return False
     print(f"📁 Storage root: {storage_root}")
     
     # Check if files exist

@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 import mimetypes
 
 from core.IComposer import IComposer
-from core.DualLanguageCombiner import DualLanguageCombiner
+from position_based_combiner import PositionBasedCombiner
 from common.logger import get_logger
 
 class RealStorageDualLanguageComposer(IComposer):
@@ -24,7 +24,7 @@ class RealStorageDualLanguageComposer(IComposer):
         self.progress_filename = progress_filename
         self.translated_content_filename = translated_content_filename
         self.final_epub_filename = final_epub_filename
-        self.combiner = DualLanguageCombiner(self.logger)
+        self.combiner = PositionBasedCombiner()
     
     def get_name(self) -> str:
         return "real_storage_dual_language_markdown"
@@ -77,9 +77,23 @@ class RealStorageDualLanguageComposer(IComposer):
             progress['step'] = 'combining_content'
             self.save_progress(book_id, storage_root, progress)
             
-            # Combine original and translated content
+            # Combine original and translated content using position-based matching
             self.logger.info(f"Combining originalbook.md and free-translatedcontent.md for book: {book_id}", book_id)
-            success = self.combiner.combine_files(original_path, translated_path, combined_path)
+            
+            # Read both files
+            with open(original_path, 'r', encoding='utf-8') as f:
+                original_content = f.read()
+            with open(translated_path, 'r', encoding='utf-8') as f:
+                translated_content = f.read()
+            
+            # Combine using position-based matching
+            combined_content = self.combiner.combine_by_position(original_content, translated_content)
+            
+            # Write combined content
+            with open(combined_path, 'w', encoding='utf-8') as f:
+                f.write(combined_content)
+            
+            success = True
             
             if not success:
                 self.logger.error(f"Failed to combine content for book: {book_id}", book_id)

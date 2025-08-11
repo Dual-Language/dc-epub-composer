@@ -13,12 +13,12 @@ from common.logger import get_logger
 
 class RealStorageDualLanguageComposer(IComposer):
     """
-    Composer that combines originalbook.md and free-translatedcontent.md (real storage format)
+    Composer that combines originalbook.md and originaltranslation.md (real storage format)
     into dual-language format before converting to EPUB.
     """
     
     def __init__(self, progress_filename: str = "composingservice-progress.json", 
-                 translated_content_filename: str = "free-translatedcontent.md", 
+                 translated_content_filename: str = "originaltranslation.md", 
                  final_epub_filename: str = "dual-language-final.epub"):
         self.logger = get_logger()
         self.progress_filename = progress_filename
@@ -30,7 +30,7 @@ class RealStorageDualLanguageComposer(IComposer):
         return "real_storage_dual_language_markdown"
     
     def can_compose(self, book_id: str, storage_root: str) -> bool:
-        """Check if both originalbook.md and free-translatedcontent.md exist for this book."""
+        """Check if both originalbook.md and originaltranslation.md exist for this book."""
         book_dir = pathlib.Path(storage_root) / book_id
         original_path = book_dir / "originalbook.md"
         translated_path = book_dir / self.translated_content_filename
@@ -49,7 +49,7 @@ class RealStorageDualLanguageComposer(IComposer):
     
     def compose(self, book_id: str, storage_root: str, config: Optional[Dict[str, Any]] = None) -> bool:
         """
-        Combine originalbook.md and free-translatedcontent.md into dual-language format,
+        Combine originalbook.md and originaltranslation.md into dual-language format,
         then convert to EPUB.
         """
         try:
@@ -78,7 +78,7 @@ class RealStorageDualLanguageComposer(IComposer):
             self.save_progress(book_id, storage_root, progress)
             
             # Combine original and translated content using position-based matching
-            self.logger.info(f"Combining originalbook.md and free-translatedcontent.md for book: {book_id}", book_id)
+            self.logger.info(f"Combining originalbook.md and originaltranslation.md for book: {book_id}", book_id)
             
             # Read both files
             with open(original_path, 'r', encoding='utf-8') as f:

@@ -1,0 +1,21 @@
+# DC EPUB Composer API Dependencies
+# Add these to the existing requirements.txt
+
+# Flask web framework
+flask>=2.3.0
+
+# Swagger UI for API documentation
+flask-swagger-ui>=4.11.0
+
+# File upload handling (already included with Flask)
+werkzeug>=2.3.0
+
+# JSON handling (built-in Python)
+# Path handling (built-in Python pathlib)
+# Logging (built-in Python)
+
+# Existing dependencies from main service
+# markdown>=3.4.0
+# ebooklib>=0.18
+# beautifulsoup4>=4.12.0
+# lxml>=4.9.0

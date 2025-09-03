@@ -26,7 +26,7 @@ app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max file size
 UPLOAD_FOLDER = tempfile.mkdtemp()
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-logger = get_logger(__name__)
+logger = get_logger(get_storage_root())
 
 # Swagger configuration
 SWAGGER_URL = '/api/docs'

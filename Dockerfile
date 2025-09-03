@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create storage directory
-RUN mkdir -p /app/storage
+RUN mkdir -p /app/storage /app/logs
 
 # Set environment variables
 ENV STORAGE_ROOT=/app/storage
